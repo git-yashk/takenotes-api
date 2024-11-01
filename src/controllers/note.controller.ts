@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import noteModel from "../models/note.model";
 
 async function createNote(req: Request, res: Response) {
-    const { _id, title, content, bg_color } = req.body;
+    const { title, content, bg_color } = req.body;
+    const user_id = req.body.user._id;
 
     if (!title && !content) {
         res.status(400).json({ message: "Either title or content is required." });
@@ -14,29 +15,34 @@ async function createNote(req: Request, res: Response) {
             title,
             content,
             bg_color,
-            user: _id
+            user: user_id
         });
         res.status(201).json(newNote);
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Something went wrong." });
-        return;
     }
 }
 
 async function getNotes(req: Request, res: Response) {
     try {
-        const notes = await noteModel.find({ user: req.body._id });
+        const notes = await noteModel.find({ user: req.body.user._id });
         res.status(200).json(notes);
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Something went wrong." });
-        return;
     }
 }
 
 async function updateNote(req: Request, res: Response) {
-    res.json({ message: "updateNote" });
+    const { _id, title, content, bg_color } = req.body;
+    try {
+        const updatedNote = await noteModel.findByIdAndUpdate(_id, { title, content, bg_color }, { new: true });
+        res.status(200).json(updatedNote);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Something went wrong." });
+    }
 }
 
 async function deleteNote(req: Request, res: Response) {

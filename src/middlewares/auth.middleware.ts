@@ -29,7 +29,7 @@ async function verifyJwt(req: Request, res: Response, next: NextFunction) {
             res.status(404).json({ message: "User not found" });
             return;
         }
-        req.body._id = user._id;
+        req.body.user = { _id: user._id };
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Something went wrong" });

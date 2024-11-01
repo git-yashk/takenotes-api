@@ -102,7 +102,7 @@ async function loginUser(req: Request, res: Response) {
 async function logoutUser(req: Request, res: Response) {
 
     try {
-        const user = await userModel.findByIdAndUpdate(req.body._id, { $unset: { refreshToken: "" } }, { new: true });
+        const user = await userModel.findByIdAndUpdate(req.body.user._id, { $unset: { refreshToken: "" } }, { new: true });
         res
             .status(200)
             .clearCookie("accessToken")
