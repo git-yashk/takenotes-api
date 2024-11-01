@@ -1,6 +1,15 @@
 import mongoose from "mongoose";
+import { UserType } from "./user.model";
 
-const noteSchema = new mongoose.Schema(
+interface NoteType {
+    _id: string;
+    title: string;
+    content: string;
+    bg_color: string;
+    user: UserType;
+}
+
+const noteSchema = new mongoose.Schema<NoteType>(
     {
         title: {
             type: String,
@@ -23,4 +32,4 @@ const noteSchema = new mongoose.Schema(
     { timestamps: true, }
 );
 
-export default mongoose.model("Note", noteSchema);
+export default mongoose.model<NoteType>("Note", noteSchema);

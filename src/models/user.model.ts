@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import config from "../config/config";
 
-interface UserType {
+export interface UserType {
     _id: string;
     name: string;
     email: string;
