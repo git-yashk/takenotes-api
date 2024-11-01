@@ -53,7 +53,7 @@ userSchema.methods.isPasswordCorrect = async function (password: string): Promis
 userSchema.methods.generateAccessToken = function (): string {
     return jwt.sign(
         {
-            _id: this._id,
+            sub: this._id,
         },
         config.token.access_token_secret as string,
         {
@@ -65,7 +65,7 @@ userSchema.methods.generateAccessToken = function (): string {
 userSchema.methods.generateRefreshToken = function (): string {
     return jwt.sign(
         {
-            _id: this._id,
+            sub: this._id,
         },
         config.token.refresh_token_secret as string,
         {
