@@ -36,8 +36,18 @@ async function getNotes(req: Request, res: Response) {
 
 async function updateNote(req: Request, res: Response) {
     const { _id, title, content, bg_color } = req.body;
+    const user_id = req.body.user._id;
+
     try {
-        const updatedNote = await noteModel.findByIdAndUpdate(_id, { title, content, bg_color }, { new: true });
+        const updatedNote = await noteModel.findOneAndUpdate(
+            { _id, user: user_id },
+            { title, content, bg_color },
+            { new: true }
+        );
+        if (!updatedNote) {
+            res.status(404).json({ message: "Note not found." });
+            return;
+        }
         res.status(200).json(updatedNote);
     } catch (error) {
         console.log(error);
