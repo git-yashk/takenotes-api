@@ -25,8 +25,10 @@ async function createNote(req: Request, res: Response) {
 }
 
 async function getNotes(req: Request, res: Response) {
+    const user_id = req.body.user._id;
+
     try {
-        const notes = await noteModel.find({ user: req.body.user._id });
+        const notes = await noteModel.find({ user: user_id });
         res.status(200).json(notes);
     } catch (error) {
         console.log(error);
@@ -56,7 +58,20 @@ async function updateNote(req: Request, res: Response) {
 }
 
 async function deleteNote(req: Request, res: Response) {
-    res.json({ message: "deleteNote" });
+    const { _id } = req.body;
+    const user_id = req.body.user._id;
+
+    try {
+        const deletedNote = await noteModel.findOneAndDelete({ _id, user: user_id });
+        if (!deletedNote) {
+            res.status(404).json({ message: "Note not found." });
+            return;
+        }
+        res.status(200).json(deletedNote);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Something went wrong." });
+    }
 }
 
 export { createNote, getNotes, updateNote, deleteNote };
