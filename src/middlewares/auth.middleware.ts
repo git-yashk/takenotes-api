@@ -4,7 +4,6 @@ import config from "../config/config";
 import userModel from "../models/user.model";
 
 async function verifyJwt(req: Request, res: Response, next: NextFunction) {
-    console.log(req);
     const accessToken = req.cookies.accessToken;
     if (!accessToken) {
         res.status(401).json({ message: "Unauthorized" });

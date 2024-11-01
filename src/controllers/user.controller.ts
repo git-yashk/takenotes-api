@@ -103,18 +103,16 @@ async function logoutUser(req: Request, res: Response) {
 
     try {
         const user = await userModel.findByIdAndUpdate(req.body._id, { $unset: { refreshToken: "" } }, { new: true });
-        console.log(user);
+        res
+            .status(200)
+            .clearCookie("accessToken")
+            .clearCookie("refreshToken")
+            .json({ _id: user?._id, message: "Logged out successfully" });
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Something went wrong" });
         return;
     }
-
-    res
-        .status(200)
-        .clearCookie("accessToken")
-        .clearCookie("refreshToken")
-        .json({ message: "Logged out successfully" });
 }
 
 export { registerUser, loginUser, logoutUser };
