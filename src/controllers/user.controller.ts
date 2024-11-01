@@ -15,7 +15,7 @@ async function registerUser(req: Request, res: Response) {
 
     const emailRegex = /^[a-z]{1,}[a-z0-9._-]{1,}@[a-z]{2,}\.[a-z]{2,}$/;
     if (!emailRegex.test(email)) {
-        res.status(400).json({ message: "Invalid email" });
+        res.status(400).json({ message: "Invalid email address" });
         return;
     }
 
@@ -32,6 +32,7 @@ async function registerUser(req: Request, res: Response) {
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Something went wrong" });
+        return;
     }
 
     let newUser;
@@ -45,7 +46,57 @@ async function registerUser(req: Request, res: Response) {
 
     const accessToken = newUser.generateAccessToken();
 
-    res.json({ accessToken });
+    res.status(201).json({ accessToken });
 }
 
-export { registerUser };
+async function loginUser(req: Request, res: Response) {
+    let { email, password } = req.body;
+
+    email = email?.trim().toLowerCase();
+    password = password?.trim();
+
+    if (!email || !password) {
+        res.status(400).json({ message: "Please enter all fields" });
+        return;
+    }
+
+    const emailRegex = /^[a-z]{1,}[a-z0-9._-]{1,}@[a-z]{2,}\.[a-z]{2,}$/;
+    if (!emailRegex.test(email)) {
+        res.status(400).json({ message: "Invalid email address" });
+        return;
+    }
+
+    let user;
+    try {
+        user = await userModel.findOne({ email });
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Something went wrong" });
+        return;
+    }
+
+    const isPasswordCorrect = await user.isPasswordCorrect(password);
+
+    if (!isPasswordCorrect) {
+        res.status(401).json({ message: "Invalid credentials" });
+        return;
+    }
+
+    const accessToken = user.generateAccessToken();
+
+    const refreshToken = user.generateRefreshToken();
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+
+    res
+        .status(200)
+        .cookie("accessToken", accessToken, { httpOnly: true, secure: true })
+        .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true })
+        .json({ accessToken, refreshToken });
+}
+
+export { registerUser, loginUser };
