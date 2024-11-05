@@ -4,7 +4,7 @@ import { createNote, deleteNote, getNotes, updateNote } from "../controllers/not
 const noteRouter = Router();
 
 noteRouter.post("/create", createNote);
-noteRouter.get("/get", getNotes);
+noteRouter.get("/", getNotes);
 noteRouter.put("/update", updateNote);
 noteRouter.delete("/delete", deleteNote);
 
